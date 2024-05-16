@@ -11,7 +11,7 @@ class TestCategory:
             Category()
 
     def test_name_must_have_less_or_equal_than_255_characters(self):
-        with pytest.raises(ValueError, match="name must have less or equal than 255 characters"):
+        with pytest.raises(ValueError, match="name cannot be longer than 255 characters"):
             Category("a" * 256)
 
     def test_category_must_be_created_with_id_as_uuid_by_default(self):
@@ -48,3 +48,29 @@ class TestCategory:
     def test_category_repr_method(self):
         category = Category(name="Films", description="Movies", is_active=False)
         assert repr(category) == "<Category Films ({})>".format(category.id)
+
+    def test_cannot_create_category_with_empty_name(self):
+        with pytest.raises(ValueError, match="name cannot be empty"):
+            Category(name="")
+
+
+class TestUpdateCategory:
+    def test_update_category_with_name_and_description(self):
+        category = Category(name="Films", description="Films about action")
+
+        category.update(name="Movies", description="Action Movies")
+
+        assert category.name == "Movies"
+        assert category.description == "Action Movies"
+
+    def test_update_category_with_invalid_name_raises_exception(self):
+        category = Category(name="Films", description="Films about action")
+
+        with pytest.raises(ValueError, match="name cannot be longer than 255 characters"):
+            category.update(name="a" * 256, description="Action Movies")
+
+    def test_update_category_with_empty_name_raises_exception(self):
+        category = Category(name="Films", description="Films about action")
+
+        with pytest.raises(ValueError, match="name cannot be empty"):
+            category.update(name="", description="Action Movies")
