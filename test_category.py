@@ -115,3 +115,29 @@ class TestActivateAndDeactivateCategory:
         category.deactivate()
 
         assert category.is_active is False
+
+
+class TestEquality:
+    def test_when_categories_have_same_id_they_are_equal(self):
+        category_id = uuid.uuid4()
+        category1 = Category(id=category_id, name="Films")
+        category2 = Category(id=category_id, name="Films")
+
+        assert category1 == category2
+
+    def test_categories_with_different_id_are_not_equal(self):
+        category1 = Category(name="Films")
+        category2 = Category(name="Films")
+
+        assert category1 != category2
+
+    def test_equality_diffetent_classes(self):
+        class Dummy:
+            pass
+
+        common_id = uuid.uuid4()
+        category = Category(name="Films", id=common_id)
+        dummy = Dummy()
+        dummy.id = common_id
+
+        assert category != dummy

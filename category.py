@@ -3,11 +3,11 @@ import uuid
 
 class Category:
     def __init__(
-            self,
-            name,
-            id="",
-            description="",
-            is_active=True,
+        self,
+        name,
+        id="",
+        description="",
+        is_active=True,
     ):
         self.id = id or uuid.uuid4()
         self.name = name
@@ -29,6 +29,12 @@ class Category:
     def __repr__(self):
         return f"<Category {self.name} ({self.id})>"
 
+    def __eq__(self, other):
+        if not isinstance(other, Category):
+            return False
+
+        return self.id == other.id
+
     def update(self, name, description):
         self.name = name
         self.description = description
@@ -38,7 +44,7 @@ class Category:
     def activate(self):
         self.is_active = True
         self.validate()
-    
+
     def deactivate(self):
         self.is_active = False
         self.validate()
