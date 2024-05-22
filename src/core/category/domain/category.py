@@ -13,20 +13,6 @@ class Category:
     def __post_init__(self):
         self.validate()
 
-    # def __init__(
-    #     self,
-    #     name,
-    #     id="",
-    #     description="",
-    #     is_active=True,
-    # ):
-    #     self.id = id or uuid.uuid4()
-    #     self.name = name
-    #     self.description = description
-    #     self.is_active = is_active
-
-    #     self.validate()
-
     def validate(self):
         if len(self.name) > 255:
             raise ValueError("name cannot be longer than 255 characters")
