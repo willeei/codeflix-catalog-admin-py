@@ -1,5 +1,3 @@
-from abc import ABC
-
 from src.core.category.application.category_repository import CategoryRepository
 
 
