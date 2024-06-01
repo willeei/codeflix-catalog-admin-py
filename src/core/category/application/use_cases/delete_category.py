@@ -6,31 +6,18 @@ from src.core.category.application.use_cases.exceptions import CategoryNotFound
 
 
 @dataclass
-class GetCategoryRequest:
+class DeleteCategoryRequest:
     id: UUID
 
 
-@dataclass
-class GetCategoryResponse:
-    id: UUID
-    name: str
-    description: str
-    is_active: bool
-
-
-class GetCategory:
+class DeleteCategory:
     def __init__(self, repository: CategoryRepository):
         self.repository = repository
 
-    def execute(self, request: GetCategoryRequest) -> GetCategoryResponse:
+    def execute(self, request: DeleteCategoryRequest) -> None:
         category = self.repository.get_by_id(request.id)
 
         if category is None:
             raise CategoryNotFound(f"Category with id {request.id} not found")
 
-        return GetCategoryResponse(
-            id=category.id,
-            name=category.name,
-            description=category.description,
-            is_active=category.is_active,
-        )
+        self.repository.delete(request.id)
