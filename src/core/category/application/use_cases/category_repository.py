@@ -6,7 +6,7 @@ from src.core.category.domain.category import Category
 
 class CategoryRepository(ABC):
     @abstractmethod
-    def save(self, category: Category):
+    def create(self, category: Category):
         raise NotImplementedError
 
     @abstractmethod

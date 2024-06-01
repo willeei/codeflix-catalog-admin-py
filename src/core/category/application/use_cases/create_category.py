@@ -32,6 +32,6 @@ class CreateCategory:
         except ValueError as err:
             raise InvalidCategoryData(err)
 
-        self.repository.save(category)
+        self.repository.create(category)
 
         return CreateCategoryResponse(id=category.id)

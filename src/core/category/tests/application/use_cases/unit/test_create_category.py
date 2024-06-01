@@ -22,7 +22,7 @@ class TestCreateCategory:
 
         assert response.id is not None
         assert isinstance(response.id, UUID)
-        assert mock_repository.save.called is True
+        assert mock_repository.create.called is True
 
     def test_create_category_with_invalid_data(self):
         use_case = CreateCategory(

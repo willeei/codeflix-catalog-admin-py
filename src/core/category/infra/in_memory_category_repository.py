@@ -8,7 +8,7 @@ class InMemoryCategoryRepository(CategoryRepository):
     def __init__(self, categories=None):
         self.categories = categories or []
 
-    def save(self, category):
+    def create(self, category: Category):
         self.categories.append(category)
 
     def get_by_id(self, category_id: UUID) -> Category | None:
@@ -23,5 +23,8 @@ class InMemoryCategoryRepository(CategoryRepository):
         if category:
             self.categories.remove(category)
 
-    def update(self, category) -> None:
-        ...
+    def update(self, category: Category) -> None:
+        old_category = self.get_by_id(category.id)
+        if old_category:
+            self.categories.remove(old_category)
+            self.categories.append(category)
