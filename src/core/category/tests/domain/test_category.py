@@ -1,6 +1,7 @@
-import pytest
 import uuid
 from uuid import UUID
+
+import pytest
 
 from src.core.category.domain.category import Category
 
@@ -8,13 +9,13 @@ from src.core.category.domain.category import Category
 class TestCategory:
     def test_name_is_required(self):
         with pytest.raises(
-            TypeError, match="missing 1 required positional argument: 'name'"
+                TypeError, match="missing 1 required positional argument: 'name'"
         ):
             Category()
 
     def test_name_must_have_less_or_equal_than_255_characters(self):
         with pytest.raises(
-            ValueError, match="name cannot be longer than 255 characters"
+                ValueError, match="name cannot be longer than 255 characters"
         ):
             Category("a" * 256)
 
@@ -68,7 +69,7 @@ class TestUpdateCategory:
         category = Category(name="Films", description="Films about action")
 
         with pytest.raises(
-            ValueError, match="name cannot be longer than 255 characters"
+                ValueError, match="name cannot be longer than 255 characters"
         ):
             category.update(name="a" * 256, description="Action Movies")
 
