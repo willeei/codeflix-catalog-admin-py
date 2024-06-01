@@ -38,6 +38,7 @@ class TestGetByIdInMemoryCategoryRepository:
         assert result is None
         assert len(repository.categories) == 0
 
+
 class TestDeleteInMemoryCategoryRepository:
     def test_can_delete_category(self):
         category = Category(
