@@ -5,8 +5,8 @@ from src.core.category.domain.category import Category
 
 
 class InMemoryCategoryRepository(CategoryRepository):
-    def __init__(self, categories=None):
-        self.categories = categories or []
+    def __init__(self, categories: list[Category] = None):
+        self.categories: list[Category] = categories or []
 
     def create(self, category: Category):
         self.categories.append(category)
@@ -28,3 +28,6 @@ class InMemoryCategoryRepository(CategoryRepository):
         if old_category:
             self.categories.remove(old_category)
             self.categories.append(category)
+
+    def find_all(self) -> list[Category]:
+        return [category for category in self.categories]
