@@ -3,9 +3,17 @@ from unittest.mock import create_autospec
 
 import pytest
 
-from src.core.category.application.use_cases.category_repository import CategoryRepository
-from src.core.category.application.use_cases.exceptions import CategoryNotFound, InvalidCategoryData
-from src.core.category.application.use_cases.update_category import UpdateCategory, UpdateCategoryRequest
+from src.core.category.application.use_cases.category_repository import (
+    CategoryRepository,
+)
+from src.core.category.application.use_cases.exceptions import (
+    CategoryNotFound,
+    InvalidCategoryData,
+)
+from src.core.category.application.use_cases.update_category import (
+    UpdateCategory,
+    UpdateCategoryRequest,
+)
 from src.core.category.domain.category import Category
 
 
@@ -97,9 +105,7 @@ class TestUpdateCategory:
         mock_repository.get_by_id.return_value = None
 
         use_case = UpdateCategory(repository=mock_repository)
-        request = UpdateCategoryRequest(
-            id=category_id
-        )
+        request = UpdateCategoryRequest(id=category_id)
 
         with pytest.raises(CategoryNotFound) as exc_info:
             use_case.execute(request)
@@ -124,7 +130,9 @@ class TestUpdateCategory:
             name="a" * 256,
         )
 
-        with pytest.raises(InvalidCategoryData, match=expected_error_message) as exc_info:
+        with pytest.raises(
+            InvalidCategoryData, match=expected_error_message
+        ) as exc_info:
             use_case.execute(request)
 
         assert exc_info.type is InvalidCategoryData

@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from src.core.category.application.use_cases.category_repository import CategoryRepository
+from src.core.category.application.use_cases.category_repository import (
+    CategoryRepository,
+)
 
 
 @dataclass
@@ -37,6 +39,7 @@ class ListCategory:
                     name=category.name,
                     description=category.description,
                     is_active=category.is_active,
-                ) for category in categories
+                )
+                for category in categories
             ]
         )

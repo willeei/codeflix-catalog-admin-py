@@ -1,6 +1,11 @@
-from src.core.category.application.use_cases.update_category import UpdateCategory, UpdateCategoryRequest
+from src.core.category.application.use_cases.update_category import (
+    UpdateCategory,
+    UpdateCategoryRequest,
+)
 from src.core.category.domain.category import Category
-from src.core.category.infra.in_memory_category_repository import InMemoryCategoryRepository
+from src.core.category.infra.in_memory_category_repository import (
+    InMemoryCategoryRepository,
+)
 
 
 class TestUpdateCategory:

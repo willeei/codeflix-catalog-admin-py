@@ -1,8 +1,14 @@
 from unittest.mock import create_autospec
 
-from src.core.category.application.use_cases.category_repository import CategoryRepository
-from src.core.category.application.use_cases.list_category import ListCategory, ListCategoryRequest, \
-    ListCategoryResponse, CategoryOutput
+from src.core.category.application.use_cases.category_repository import (
+    CategoryRepository,
+)
+from src.core.category.application.use_cases.list_category import (
+    ListCategory,
+    ListCategoryRequest,
+    ListCategoryResponse,
+    CategoryOutput,
+)
 from src.core.category.domain.category import Category
 
 
@@ -48,6 +54,6 @@ class TestListCategories:
                     name=category_series.name,
                     description=category_series.description,
                     is_active=category_series.is_active,
-                )
+                ),
             ]
         )

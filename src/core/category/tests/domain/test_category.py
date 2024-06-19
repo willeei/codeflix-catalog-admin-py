@@ -1,4 +1,5 @@
 import uuid
+from dataclasses import dataclass
 from uuid import UUID
 
 import pytest
@@ -9,13 +10,13 @@ from src.core.category.domain.category import Category
 class TestCategory:
     def test_name_is_required(self):
         with pytest.raises(
-                TypeError, match="missing 1 required positional argument: 'name'"
+            TypeError, match="missing 1 required positional argument: 'name'"
         ):
             Category()
 
     def test_name_must_have_less_or_equal_than_255_characters(self):
         with pytest.raises(
-                ValueError, match="name cannot be longer than 255 characters"
+            ValueError, match="name cannot be longer than 255 characters"
         ):
             Category("a" * 256)
 
@@ -49,7 +50,7 @@ class TestCategory:
 
     def test_category_repr_method(self):
         category = Category(name="Films", description="Movies", is_active=False)
-        assert repr(category) == "<Category Films ({})>".format(category.id)
+        assert repr(category) == f"<Category Films ({category.id})>"
 
     def test_cannot_create_category_with_empty_name(self):
         with pytest.raises(ValueError, match="name cannot be empty"):
@@ -69,7 +70,7 @@ class TestUpdateCategory:
         category = Category(name="Films", description="Films about action")
 
         with pytest.raises(
-                ValueError, match="name cannot be longer than 255 characters"
+            ValueError, match="name cannot be longer than 255 characters"
         ):
             category.update(name="a" * 256, description="Action Movies")
 
@@ -133,8 +134,9 @@ class TestEquality:
         assert category1 != category2
 
     def test_equality_diffetent_classes(self):
+        @dataclass
         class Dummy:
-            pass
+            id: uuid.UUID = uuid.uuid4()
 
         common_id = uuid.uuid4()
         category = Category(name="Films", id=common_id)
