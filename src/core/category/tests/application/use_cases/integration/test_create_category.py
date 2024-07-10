@@ -30,4 +30,4 @@ class TestCreateCategory:
         assert persisted_category.id == response.id
         assert persisted_category.name == "Film"
         assert persisted_category.description == "Film description"
-        assert persisted_category.is_active == True
+        assert persisted_category.is_active is True
