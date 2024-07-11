@@ -27,7 +27,7 @@ class ListCategory:
         self.repository = repository
 
     def execute(self, request: ListCategoryRequest) -> ListCategoryResponse:
-        categories = self.repository.find_all()
+        categories = self.repository.list()
 
         return ListCategoryResponse(
             # list comprehension // dict comprehension

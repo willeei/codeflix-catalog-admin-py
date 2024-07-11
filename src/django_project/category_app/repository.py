@@ -9,7 +9,7 @@ class DjangoORMCategoryRepository(CategoryRepository):
     def __init__(self, category_model: CategoryModel = CategoryModel):
         self.category_model = category_model
 
-    def create(self, category: Category):
+    def save(self, category: Category):
         self.category_model.objects.create(
             id=category.id,
             name=category.name,
@@ -32,7 +32,7 @@ class DjangoORMCategoryRepository(CategoryRepository):
     def delete(self, category_id: UUID) -> None:
         self.category_model.objects.filter(id=category_id).delete()
 
-    def find_all(self) -> list[Category]:
+    def list(self) -> list[Category]:
         return [
             Category(
                 id=category.id,

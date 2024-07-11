@@ -17,8 +17,8 @@ class TestCategoryAPI(APITestCase):
         )
 
         repository = DjangoORMCategoryRepository()
-        repository.create(category_movie)
-        repository.create(category_documentary)
+        repository.save(category_movie)
+        repository.save(category_documentary)
 
         url = "/api/categories/"
         response = self.client.get(url)

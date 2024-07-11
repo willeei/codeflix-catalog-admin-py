@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from src.core.category.application.use_cases.exceptions import \
-    InvalidCategoryData
+from src.core.category.application.use_cases.exceptions import InvalidCategory
 from src.core.category.domain.category import Category
 from src.core.category.domain.category_repository import CategoryRepository
 
@@ -23,7 +22,8 @@ class CreateCategory:
     def __init__(self, repository: CategoryRepository):
         self.repository = repository
 
-    def execute(self, request: CreateCategoryRequest) -> CreateCategoryResponse:
+    def execute(self, request: CreateCategoryRequest) -> \
+            CreateCategoryResponse:
         try:
             category = Category(
                 name=request.name,
@@ -31,8 +31,8 @@ class CreateCategory:
                 is_active=request.is_active,
             )
         except ValueError as err:
-            raise InvalidCategoryData(err) from err
+            raise InvalidCategory(err) from err
 
-        self.repository.create(category)
+        self.repository.save(category)
 
         return CreateCategoryResponse(id=category.id)

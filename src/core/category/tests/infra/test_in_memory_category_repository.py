@@ -6,15 +6,15 @@ from src.core.category.infra.in_memory_category_repository import (
 )
 
 
-class TestCreate:
+class TestSave:
     def test_can_save_category(self):
         repository = InMemoryCategoryRepository()
         category = Category(
-            name="Films",
-            description="Category of films",
+            name="Filmes",
+            description="Categoria para filmes",
         )
 
-        repository.create(category)
+        repository.save(category)
 
         assert len(repository.categories) == 1
         assert repository.categories[0] == category
@@ -22,26 +22,28 @@ class TestCreate:
 
 class TestGetById:
     def test_can_get_category_by_id(self):
-        category = Category(
-            name="Films",
-            description="Category of films",
+        category_movie = Category(
+            name="Filmes",
+            description="Categoria para filmes",
         )
-        repository = InMemoryCategoryRepository(categories=[category])
+        category_serie = Category(
+            name="Series",
+            description="Categoria para Séries",
+        )
+        repository = InMemoryCategoryRepository(
+            categories=[category_movie, category_serie]
+        )
 
-        result = repository.get_by_id(category.id)
+        category = repository.get_by_id(category_id=category_movie.id)
 
-        assert result == category
+        assert category == category_movie
 
     def test_when_category_does_not_exist_then_return_none(self):
         category_film = Category(
             name="Film",
-            description="Category para film",
+            description="Categoria para filmes",
         )
-        repository = InMemoryCategoryRepository(
-            categories=[
-                category_film,
-            ]
-        )
+        repository = InMemoryCategoryRepository(categories=[category_film])
 
         category = repository.get_by_id(uuid.uuid4())
 
@@ -50,7 +52,7 @@ class TestGetById:
 
 class TestDelete:
     def test_can_delete_category(self):
-        category_filme = Category(
+        category_movie = Category(
             name="Filme",
             description="Categoria para filmes",
         )
@@ -59,13 +61,10 @@ class TestDelete:
             description="Categoria para séries",
         )
         repository = InMemoryCategoryRepository(
-            categories=[
-                category_filme,
-                category_serie,
-            ]
+            categories=[category_movie, category_serie]
         )
 
-        repository.delete(category_filme.id)
+        repository.delete(category_movie.id)
 
         assert len(repository.categories) == 1
         assert repository.categories[0] == category_serie
@@ -80,7 +79,7 @@ class TestDelete:
 
 class TestUpdate:
     def test_update_category(self):
-        category_filme = Category(
+        category_movie = Category(
             name="Filme",
             description="Categoria para filmes",
         )
@@ -89,18 +88,15 @@ class TestUpdate:
             description="Categoria para séries",
         )
         repository = InMemoryCategoryRepository(
-            categories=[
-                category_filme,
-                category_serie,
-            ]
+            categories=[category_movie, category_serie]
         )
 
-        category_filme.name = "Filmes"
-        category_filme.description = "Categoria para filmes e séries"
-        repository.update(category_filme)
+        category_movie.name = "Filmes"
+        category_movie.description = "Categoria para filmes e séries"
+        repository.update(category_movie)
 
         assert len(repository.categories) == 2
-        updated_category = repository.get_by_id(category_filme.id)
+        updated_category = repository.get_by_id(category_movie.id)
         assert updated_category.name == "Filmes"
         assert updated_category.description == "Categoria para filmes e séries"
 

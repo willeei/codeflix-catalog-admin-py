@@ -1,47 +1,51 @@
-from unittest.mock import MagicMock, create_autospec
+import uuid
+from unittest.mock import create_autospec
 
 import pytest
 
-from src.core.category.application.use_cases.create_category import (
-    CreateCategory, CreateCategoryRequest)
-from src.core.category.application.use_cases.exceptions import \
-    InvalidCategoryData
+from src.core.category.application.use_cases.exceptions import CategoryNotFound
 from src.core.category.application.use_cases.get_category import (
-    GetCategory, GetCategoryRequest, GetCategoryResponse)
+    GetCategory,
+    GetCategoryRequest,
+    GetCategoryResponse
+)
 from src.core.category.domain.category import Category
 from src.core.category.domain.category_repository import CategoryRepository
 
 
 class TestGetCategory:
     def test_return_found_category(self):
-        category = Category(
-            name="Film",
-            description="Film description",
-            is_active=True,
+        expected_name = "Filmes"
+        expected_description = "Categoria de filmes"
+        expected_id = uuid.uuid4()
+        expected_is_active = True
+
+        mock_category = Category(
+            id=expected_id,
+            name=expected_name,
+            description=expected_description,
+            is_active=expected_is_active,
         )
         mock_repository = create_autospec(CategoryRepository)
-        mock_repository.get_by_id.return_value = category
+        mock_repository.get_by_id.return_value = mock_category
 
         use_case = GetCategory(repository=mock_repository)
-        request = GetCategoryRequest(
-            id=category.id,
-        )
+        request = GetCategoryRequest(id=mock_category.id)
         response = use_case.execute(request)
 
         assert response == GetCategoryResponse(
-            id=category.id,
-            name="Film",
-            description="Film description",
-            is_active=True,
+            id=expected_id,
+            name=expected_name,
+            description=expected_description,
+            is_active=expected_is_active
         )
 
-    def test_create_category_with_invalid_data(self):
-        use_case = CreateCategory(repository=MagicMock(CategoryRepository))
+    def test_when_category_not_found_then_raise_exception(self):
+        mock_repository = create_autospec(CategoryRepository)
+        mock_repository.get_by_id.return_value = None
 
-        with pytest.raises(
-            InvalidCategoryData, match="name cannot be empty"
-        ) as exc_info:
-            use_case.execute(CreateCategoryRequest(name=""))
+        use_case = GetCategory(repository=mock_repository)
+        request = GetCategoryRequest(id=uuid.uuid4())
 
-        assert exc_info.type is InvalidCategoryData
-        assert str(exc_info.value) == "name cannot be empty"
+        with pytest.raises(CategoryNotFound):
+            use_case.execute(request)

@@ -1,4 +1,4 @@
-class InvalidCategoryData(Exception):
+class InvalidCategory(Exception):
     pass
 
 

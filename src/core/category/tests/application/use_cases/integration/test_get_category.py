@@ -4,24 +4,22 @@ import pytest
 
 from src.core.category.application.use_cases.exceptions import CategoryNotFound
 from src.core.category.application.use_cases.get_category import (
-    GetCategory,
-    GetCategoryRequest,
-    GetCategoryResponse,
-)
+    GetCategory, GetCategoryRequest, GetCategoryResponse)
 from src.core.category.domain.category import Category
-from src.core.category.infra.in_memory_category_repository import (
-    InMemoryCategoryRepository,
-)
+from src.core.category.infra.in_memory_category_repository import \
+    InMemoryCategoryRepository
 
 
 class TestCreateCategory:
     def test_get_category_by_id(self):
         category_film = Category(
+            id=uuid.uuid4(),
             name="Film",
             description="Film description",
             is_active=True,
         )
         category_series = Category(
+            id=uuid.uuid4(),
             name="Series",
             description="Series description",
             is_active=True,
@@ -32,10 +30,7 @@ class TestCreateCategory:
         )
 
         use_case = GetCategory(repository=repository)
-        request = GetCategoryRequest(
-            id=category_film.id,
-        )
-
+        request = GetCategoryRequest(id=category_film.id)
         response = use_case.execute(request)
 
         assert response == GetCategoryResponse(
@@ -63,9 +58,7 @@ class TestCreateCategory:
 
         use_case = GetCategory(repository=repository)
         not_exist_id = uuid.uuid4()
-        request = GetCategoryRequest(
-            id=not_exist_id,
-        )
+        request = GetCategoryRequest(id=not_exist_id)
 
         with pytest.raises(CategoryNotFound):
             use_case.execute(request)

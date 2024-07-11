@@ -1,51 +1,56 @@
+import pytest
 from src.core.category.application.use_cases.list_category import (
+    CategoryOutput,
     ListCategory,
     ListCategoryRequest,
-    ListCategoryResponse,
-    CategoryOutput,
+    ListCategoryResponse
 )
 from src.core.category.domain.category import Category
-from src.core.category.infra.in_memory_category_repository import (
-    InMemoryCategoryRepository,
-)
+from src.core.category.infra.in_memory_category_repository import \
+    InMemoryCategoryRepository
 
 
 class TestListCategories:
-    def test_return_empty_list(self):
-        repository = InMemoryCategoryRepository(categories=[])
+    @pytest.fixture
+    def category_movies(self) -> Category:
+        return Category(
+            name="Movies",
+            description="Movies description"
+        )
 
-        use_case = ListCategory(repository=repository)
-        request = ListCategoryRequest()
-        response = use_case.execute(request)
+    @pytest.fixture
+    def category_series(self) -> Category:
+        return Category(
+            name="Series",
+            description="Series description"
+        )
+
+    def test_when_no_categories_then_return_empty_list(self) -> None:
+        empty_repository = InMemoryCategoryRepository()
+        use_case = ListCategory(repository=empty_repository)
+        response = use_case.execute(request=ListCategoryRequest())
 
         assert response == ListCategoryResponse(data=[])
 
-    def test_return_existing_categories(self):
-        category_films = Category(
-            name="Films",
-            description="Films description",
-            is_active=True,
-        )
-        category_series = Category(
-            name="Series",
-            description="Series description",
-            is_active=True,
-        )
+    def test_when_categories_exist_then_return_mapped_list(
+        self,
+        category_movies: Category,
+        category_series: Category,
+    ) -> None:
         repository = InMemoryCategoryRepository()
-        repository.create(category_films)
-        repository.create(category_series)
+        repository.save(category=category_movies)
+        repository.save(category=category_series)
 
-        use_case = ListCategory(repository)
-        request = ListCategoryRequest()
-        response = use_case.execute(request)
+        use_case = ListCategory(repository=repository)
+        response = use_case.execute(request=ListCategoryRequest())
 
         assert response == ListCategoryResponse(
             data=[
                 CategoryOutput(
-                    id=category_films.id,
-                    name=category_films.name,
-                    description=category_films.description,
-                    is_active=category_films.is_active,
+                    id=category_movies.id,
+                    name=category_movies.name,
+                    description=category_movies.description,
+                    is_active=category_movies.is_active,
                 ),
                 CategoryOutput(
                     id=category_series.id,

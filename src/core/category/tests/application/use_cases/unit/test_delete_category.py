@@ -4,7 +4,9 @@ from unittest.mock import create_autospec
 import pytest
 
 from src.core.category.application.use_cases.delete_category import (
-    DeleteCategory, DeleteCategoryRequest)
+    DeleteCategory,
+    DeleteCategoryRequest
+)
 from src.core.category.application.use_cases.exceptions import CategoryNotFound
 from src.core.category.domain.category import Category
 from src.core.category.domain.category_repository import CategoryRepository
@@ -13,8 +15,8 @@ from src.core.category.domain.category_repository import CategoryRepository
 class TestDeleteCategory:
     def test_delete_category_from_repository(self):
         category = Category(
-            name="Films",
-            description="Category of films",
+            name="Filmes",
+            description="Categoria de filmes",
         )
         mock_repository = create_autospec(CategoryRepository)
         mock_repository.get_by_id.return_value = category

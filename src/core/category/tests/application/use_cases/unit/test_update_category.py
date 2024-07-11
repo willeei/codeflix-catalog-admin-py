@@ -4,7 +4,7 @@ from unittest.mock import create_autospec
 import pytest
 
 from src.core.category.application.use_cases.exceptions import (
-    CategoryNotFound, InvalidCategoryData)
+    CategoryNotFound, InvalidCategory)
 from src.core.category.application.use_cases.update_category import (
     UpdateCategory, UpdateCategoryRequest)
 from src.core.category.domain.category import Category
@@ -12,86 +12,89 @@ from src.core.category.domain.category_repository import CategoryRepository
 
 
 class TestUpdateCategory:
-    def test_update_category_name(self):
-        category = Category(
-            name="Film",
-            description="Film description",
-            is_active=True,
+    @pytest.fixture
+    def category(self) -> Category:
+        return Category(
+            name="Filme",
+            description="Categoria de filme",
         )
-        mock_repository = create_autospec(CategoryRepository)
-        mock_repository.get_by_id.return_value = category
 
+    @pytest.fixture
+    def mock_repository(self, category: Category) -> CategoryRepository:
+        repository = create_autospec(CategoryRepository, instance=True)
+        repository.get_by_id.return_value = category
+        return repository
+
+    def test_update_category_name(
+        self,
+        mock_repository: CategoryRepository,
+        category: Category,
+    ):
         use_case = UpdateCategory(repository=mock_repository)
-        request = UpdateCategoryRequest(
-            id=category.id,
-            name="Films",
-        )
-        use_case.execute(request)
+        use_case.execute(UpdateCategoryRequest(id=category.id, name="Filmes",))
 
-        assert category.name == "Films"
-        assert category.description == "Film description"
+        assert category.name == "Filmes"
         mock_repository.update.assert_called_once_with(category)
 
-    def test_update_category_description(self):
-        expected_description = "Film description updated"
-        category = Category(
-            name="Film",
-            description="Film description",
-            is_active=True,
-        )
-        mock_repository = create_autospec(CategoryRepository)
-        mock_repository.get_by_id.return_value = category
-
+    def test_update_category_description(
+        self,
+        mock_repository: CategoryRepository,
+        category: Category,
+    ):
         use_case = UpdateCategory(repository=mock_repository)
-        request = UpdateCategoryRequest(
-            id=category.id,
-            description=expected_description,
-        )
-        use_case.execute(request)
+        use_case.execute(UpdateCategoryRequest(
+            id=category.id, description="Categoria de Filmes",
+        ))
 
-        assert category.name == "Film"
-        assert category.description == expected_description
+        assert category.description == "Categoria de Filmes"
         mock_repository.update.assert_called_once_with(category)
 
-    def test_can_deactivate_category(self):
-        category = Category(
-            name="Film",
-            description="Film description",
-            is_active=True,
-        )
-        mock_repository = create_autospec(CategoryRepository)
-        mock_repository.get_by_id.return_value = category
+    def test_activate_category(
+        self,
+        mock_repository: CategoryRepository,
+        category: Category,
+    ) -> None:
+        category.deactivate()
 
         use_case = UpdateCategory(repository=mock_repository)
-        request = UpdateCategoryRequest(
+        use_case.execute(UpdateCategoryRequest(id=category.id, is_active=True))
+
+        assert category.is_active is True
+        mock_repository.update.assert_called_once_with(category)
+
+    def test_deactivate_category(
+        self,
+        mock_repository: CategoryRepository,
+        category: Category,
+    ) -> None:
+        category.activate()
+
+        use_case = UpdateCategory(repository=mock_repository)
+        use_case.execute(UpdateCategoryRequest(
             id=category.id,
             is_active=False,
-        )
-        use_case.execute(request)
+        ))
 
         assert category.is_active is False
         mock_repository.update.assert_called_once_with(category)
 
-    def test_can_activate_category(self):
-        category = Category(
-            name="Film",
-            description="Film description",
-            is_active=False,
-        )
-        mock_repository = create_autospec(CategoryRepository)
-        mock_repository.get_by_id.return_value = category
-
+    def test_update_categoru_name_and_description(
+        self,
+        mock_repository: CategoryRepository,
+        category: Category,
+    ) -> None:
         use_case = UpdateCategory(repository=mock_repository)
-        request = UpdateCategoryRequest(
+        use_case.execute(UpdateCategoryRequest(
             id=category.id,
-            is_active=True,
-        )
-        use_case.execute(request)
+            name="Filmes",
+            description="Categoria de Filmes",
+        ))
 
-        assert category.is_active is not False
+        assert category.name == "Filmes"
+        assert category.description == "Categoria de Filmes"
         mock_repository.update.assert_called_once_with(category)
 
-    def test_raise_exception_when_category_not_found(self):
+    def test_when_category_not_found_then_raise_exception(self):
         category_id = uuid.uuid4()
         expected_error_message = f"Category with id {category_id} not found"
 
@@ -101,22 +104,19 @@ class TestUpdateCategory:
         use_case = UpdateCategory(repository=mock_repository)
         request = UpdateCategoryRequest(id=category_id)
 
-        with pytest.raises(CategoryNotFound) as exc_info:
+        with pytest.raises(CategoryNotFound) as exc:
             use_case.execute(request)
 
-        assert exc_info.type is CategoryNotFound
-        assert str(exc_info.value) == expected_error_message
+        mock_repository.update.assert_not_called()
+        assert exc.type is CategoryNotFound
+        assert str(exc.value) == expected_error_message
 
-    def test_raise_exception_when_an_invalid_category_is_called(self):
+    def test_when_category_call_update_with_long_name_should_raise_exception(
+        self,
+        mock_repository: CategoryRepository,
+        category: Category,
+    ) -> None:
         expected_error_message = "name cannot be longer than 255 characters"
-
-        category = Category(
-            name="Film",
-            description="Description",
-            is_active=True,
-        )
-        mock_repository = create_autospec(CategoryRepository)
-        mock_repository.get_by_id.return_value = category
 
         use_case = UpdateCategory(repository=mock_repository)
         request = UpdateCategoryRequest(
@@ -124,10 +124,9 @@ class TestUpdateCategory:
             name="a" * 256,
         )
 
-        with pytest.raises(
-            InvalidCategoryData, match=expected_error_message
-        ) as exc_info:
+        with pytest.raises(InvalidCategory) as exc:
             use_case.execute(request)
 
-        assert exc_info.type is InvalidCategoryData
-        assert str(exc_info.value) == expected_error_message
+        mock_repository.update.assert_not_called()
+        assert exc.type is InvalidCategory
+        assert str(exc.value) == expected_error_message

@@ -6,8 +6,8 @@ from django_project.category_app.repository import DjangoORMCategoryRepository
 
 
 @mark.django_db
-class TestCreate:
-    def test_create_category_in_database(self):
+class TestSave:
+    def test_saves_category_in_database(self):
         category = Category(
             name="Movie",
             description="Movie description"
@@ -15,14 +15,14 @@ class TestCreate:
         repository = DjangoORMCategoryRepository()
 
         assert CategoryModel.objects.count() == 0
-        repository.create(category)
+        repository.save(category)
         assert CategoryModel.objects.count() == 1
+        saved_category = CategoryModel.objects.get()
 
-        category_db = CategoryModel.objects.get()
-        assert category_db.id == category.id
-        assert category_db.name == category.name
-        assert category_db.description == category.description
-        assert category_db.is_active == category.is_active
+        assert saved_category.id == category.id
+        assert saved_category.name == category.name
+        assert saved_category.description == category.description
+        assert saved_category.is_active == category.is_active
 
 
 @mark.django_db
@@ -35,7 +35,7 @@ class TestGetByID:
         repository = DjangoORMCategoryRepository()
 
         assert CategoryModel.objects.count() == 0
-        repository.create(category)
+        repository.save(category)
         assert CategoryModel.objects.count() == 1
 
         actual_category = repository.get_by_id(category.id)
@@ -55,7 +55,7 @@ class TestDelete:
         repository = DjangoORMCategoryRepository()
 
         assert CategoryModel.objects.count() == 0
-        repository.create(category)
+        repository.save(category)
         assert CategoryModel.objects.count() == 1
 
         repository.delete(category.id)
@@ -76,11 +76,11 @@ class TestFindAll:
         repository = DjangoORMCategoryRepository()
 
         assert CategoryModel.objects.count() == 0
-        repository.create(category_movie)
-        repository.create(category_music)
+        repository.save(category_movie)
+        repository.save(category_music)
         assert CategoryModel.objects.count() == 2
 
-        categories = repository.find_all()
+        categories = repository.list()
         assert len(categories) == 2
 
         actual_category = categories[0]
@@ -106,7 +106,7 @@ class TestUpdate:
         repository = DjangoORMCategoryRepository()
 
         assert CategoryModel.objects.count() == 0
-        repository.create(category)
+        repository.save(category)
         assert CategoryModel.objects.count() == 1
 
         assert category.id is not None
