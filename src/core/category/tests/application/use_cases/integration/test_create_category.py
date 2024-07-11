@@ -1,12 +1,9 @@
 from uuid import UUID
 
 from src.core.category.application.use_cases.create_category import (
-    CreateCategory,
-    CreateCategoryRequest,
-)
-from src.core.category.infra.in_memory_category_repository import (
-    InMemoryCategoryRepository,
-)
+    CreateCategory, CreateCategoryRequest)
+from src.core.category.infra.in_memory_category_repository import \
+    InMemoryCategoryRepository
 
 
 class TestCreateCategory:

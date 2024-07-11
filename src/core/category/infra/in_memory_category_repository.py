@@ -1,9 +1,7 @@
 from uuid import UUID
 
-from src.core.category.application.use_cases.category_repository import (
-    CategoryRepository,
-)
 from src.core.category.domain.category import Category
+from src.core.category.domain.category_repository import CategoryRepository
 
 
 class InMemoryCategoryRepository(CategoryRepository):
