@@ -1,4 +1,5 @@
 import pytest
+
 from src.core.category.application.use_cases.list_category import (
     CategoryOutput,
     ListCategory,

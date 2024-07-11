@@ -13,7 +13,8 @@ class InMemoryCategoryRepository(CategoryRepository):
 
     def get_by_id(self, category_id: UUID) -> Category | None:
         return next(
-            (category for category in self.categories if category.id == category_id),
+            (category for category in self.categories
+                if category.id == category_id),
             None,
         )
         # for category in self.categories:
