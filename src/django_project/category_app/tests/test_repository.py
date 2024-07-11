@@ -96,7 +96,7 @@ class TestFindAll:
         assert actual_category.is_active == category_music.is_active
 
 
-@mark.django_db``
+@mark.django_db
 class TestUpdate:
     def test_update_category_in_database(self):
         category = Category(
