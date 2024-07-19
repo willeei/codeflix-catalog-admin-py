@@ -1,7 +1,10 @@
 from src.core.category.domain.category import Category
 
 category_1 = Category(name="Movie", description="Movie description")
-category_2 = Category(name="Documentary", description="Documentary description")
+category_2 = Category(
+    name="Documentary",
+    description="Documentary description"
+)
 category_3 = Category(name="Movie", description="Movie description")
 
 print(category_1 == category_2)  # False
