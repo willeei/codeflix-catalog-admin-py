@@ -15,48 +15,48 @@ from src.core.category.infra.in_memory_category_repository import \
 
 class TestCreateCategory:
     def test_get_category_by_id(self):
-        category_film = Category(
+        category_filme = Category(
             id=uuid.uuid4(),
-            name="Film",
-            description="Film description",
+            name="Filmes",
+            description="Categoria para filmes",
             is_active=True,
         )
         category_series = Category(
             id=uuid.uuid4(),
             name="Series",
-            description="Series description",
+            description="Categoria para series",
             is_active=True,
         )
 
         repository = InMemoryCategoryRepository(
-            categories=[category_film, category_series]
+            categories=[category_filme, category_series]
         )
 
         use_case = GetCategory(repository=repository)
-        request = GetCategoryRequest(id=category_film.id)
+        request = GetCategoryRequest(id=category_filme.id)
         response = use_case.execute(request)
 
         assert response == GetCategoryResponse(
-            id=category_film.id,
-            name="Film",
-            description="Film description",
+            id=category_filme.id,
+            name="Filmes",
+            description="Categoria para filmes",
             is_active=True,
         )
 
-    def test_when_category_does_not_exist_then_raise_exception(self):
-        category_film = Category(
-            name="Film",
-            description="Film description",
+    def test_when_category_does_not_exist_then_raise_not_found(self):
+        category_filme = Category(
+            name="Filmes",
+            description="Categoria para filmes",
             is_active=True,
         )
         category_series = Category(
             name="Series",
-            description="Series description",
+            description="Categoria para series",
             is_active=True,
         )
 
         repository = InMemoryCategoryRepository(
-            categories=[category_film, category_series]
+            categories=[category_filme, category_series]
         )
 
         use_case = GetCategory(repository=repository)
