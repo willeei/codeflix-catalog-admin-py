@@ -1,3 +1,4 @@
+from uuid import UUID
 from rest_framework import viewsets
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -36,6 +37,7 @@ from src.django_project.category_app.serializer import (
     CreateCategoryResponseSerializer,
     DeleteCategoryRequestSerializer,
     ListCategoryResponseSerializer,
+    PartialUpdateCategoryRequestSerializer,
     RetrieveCategoryRequestSerializer,
     RetrieveCategoryResponseSerializer,
     UpdateCategoryRequestSerializer
@@ -86,6 +88,24 @@ class CategoryViewSet(viewsets.ViewSet):
                 **request.data,
                 "id": pk
             }
+        )
+        serializer.is_valid(raise_exception=True)
+
+        _input = UpdateCategoryRequest(**serializer.validated_data)
+        use_case = UpdateCategory(repository=DjangoORMCategoryRepository())
+        try:
+            use_case.execute(request=_input)
+        except CategoryNotFound:
+            return Response(status=HTTP_404_NOT_FOUND)
+        return Response(status=HTTP_204_NO_CONTENT)
+
+    def partial_update(self, request: Request, pk: UUID = None) -> Response:
+        serializer = PartialUpdateCategoryRequestSerializer(
+            data={
+                **request.data,
+                "id": pk
+            },
+            partial=True
         )
         serializer.is_valid(raise_exception=True)
 
