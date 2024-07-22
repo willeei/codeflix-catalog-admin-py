@@ -4,9 +4,15 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_200_OK,
-    HTTP_404_NOT_FOUND
+    HTTP_404_NOT_FOUND,
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT
 )
 
+from src.core.category.application.use_cases.create_category import (
+    CreateCategory,
+    CreateCategoryRequest
+)
 from src.core.category.application.use_cases.exceptions import CategoryNotFound
 from src.core.category.application.use_cases.get_category import (
     GetCategory,
@@ -16,12 +22,19 @@ from src.core.category.application.use_cases.list_category import (
     ListCategory,
     ListCategoryRequest
 )
+from src.core.category.application.use_cases.update_category import (
+    UpdateCategory,
+    UpdateCategoryRequest
+)
 from src.django_project.category_app.repository import \
     DjangoORMCategoryRepository
 from src.django_project.category_app.serializer import (
+    CreateCategoryRequestSerializer,
+    CreateCategoryResponseSerializer,
     ListCategoryResponseSerializer,
     RetrieveCategoryRequestSerializer,
-    RetrieveCategoryResponseSerializer
+    RetrieveCategoryResponseSerializer,
+    UpdateCategoryRequestSerializer
 )
 
 
@@ -49,3 +62,33 @@ class CategoryViewSet(viewsets.ViewSet):
         category = RetrieveCategoryResponseSerializer(instance=result)
 
         return Response(status=HTTP_200_OK, data=category.data)
+
+    def create(self, request: Request) -> Response:
+        serializer = CreateCategoryRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        req = CreateCategoryRequest(**serializer.validated_data)
+        use_case = CreateCategory(repository=DjangoORMCategoryRepository())
+        resp = use_case.execute(request=req)
+
+        return Response(
+            status=HTTP_201_CREATED,
+            data=CreateCategoryResponseSerializer(instance=resp).data
+        )
+
+    def update(self, request: Request, pk=None) -> Response:
+        serializer = UpdateCategoryRequestSerializer(
+            data={
+                **request.data.dict(),
+                "id": pk
+            }
+        )
+        serializer.is_valid(raise_exception=True)
+
+        _input = UpdateCategoryRequest(**serializer.validated_data)
+        use_case = UpdateCategory(repository=DjangoORMCategoryRepository())
+        try:
+            use_case.execute(request=_input)
+        except CategoryNotFound:
+            return Response(status=HTTP_404_NOT_FOUND)
+        return Response(status=HTTP_204_NO_CONTENT)
